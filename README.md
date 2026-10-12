@@ -78,7 +78,7 @@ Instead of manually running `docker build` and `docker push` using shell command
 Add build caching to speed up Docker builds. You can add Docker layer caching using the GitHub Actions Cache API (gha), add the `docker/setup-buildx-action` step and append `cache-from` and `cache-to` properties to the `docker/build-push-action` step.
 
 ```bash
- # ==========================================
+  # ==========================================
   # PUBLISH JOB - Build and push Docker image
   # ==========================================
   publish:
