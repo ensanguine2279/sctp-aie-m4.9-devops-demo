@@ -93,3 +93,18 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/devops-demo:latest
+
+  # ==========================================
+  # DEPLOY JOB - Trigger Railway to pull latest Docker Hub image
+  # ==========================================
+  deploy:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Redeploy Docker Image on Railway
+        run: railway redeploy --service my-service -y
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
