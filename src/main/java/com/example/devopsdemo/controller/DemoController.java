@@ -8,6 +8,6 @@ public class DemoController {
 
     @GetMapping("/hello")
     public String hello() {
-        return "DevOps demo application is running!";
+        return "DevOps demo - GitHub Actions is working!";
     }
 }
