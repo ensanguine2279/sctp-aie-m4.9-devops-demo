@@ -105,6 +105,6 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Redeploy Docker Image on Railway
-        run: railway redeploy --service devops-demo -y
+        run: railway redeploy --project "devops-demo" --environment production --service api-service -y
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
