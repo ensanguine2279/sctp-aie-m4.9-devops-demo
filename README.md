@@ -36,3 +36,39 @@ java.lang.AssertionError: Response content expected:<DevOps demo application is 
 ### Successful Workflow (after changing test case in `DemoControllerTest.java`)
 
 ![Successful Worflow](assets/images/github-actions-workflow-success.jpg)
+
+## Using Docker Github Actions
+
+Instead of manually running `docker build` and `docker push` using shell commands, it is safer and cleaner to use Docker's official GitHub Actions (`docker/login-action` and `docker/build-push-action`).
+
+```bash
+  # ==========================================
+  # PUBLISH JOB - Build and push Docker image
+  # ==========================================
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Get JAR from the build job
+        uses: actions/download-artifact@v8
+        with:
+          name: app-jar
+          path: target
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/devops-demo:latest
+```
