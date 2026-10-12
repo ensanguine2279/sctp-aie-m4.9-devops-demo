@@ -72,3 +72,44 @@ Instead of manually running `docker build` and `docker push` using shell command
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/devops-demo:latest
 ```
+
+## GitHub Actions Cache
+
+Add build caching to speed up Docker builds. You can add Docker layer caching using the GitHub Actions Cache API (gha), add the `docker/setup-buildx-action` step and append `cache-from` and `cache-to` properties to the `docker/build-push-action` step.
+
+```bash
+ # ==========================================
+  # PUBLISH JOB - Build and push Docker image
+  # ==========================================
+  publish:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Get JAR from the build job
+        uses: actions/download-artifact@v8
+        with:
+          name: app-jar
+          path: target
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/devops-demo:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+```
