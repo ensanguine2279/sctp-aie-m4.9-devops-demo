@@ -113,3 +113,38 @@ Add build caching to speed up Docker builds. You can add Docker layer caching us
           cache-from: type=gha
           cache-to: type=gha,mode=max
 ```
+
+## Deploy to Railway from DockerHub
+
+To deploy a pre-built image from Docker Hub rather than uploading and building source code on Railway, you need to change your Railway service's source type from a GitHub Repo/Local Source to a Docker Image.
+
+### 1. Configure Your Service on Railway
+
+Open your project on the Railway Dashboard. Click the `+ Add` button (top right corner) and select `Docker Image`.   Enter your Docker Hub image URI (e.g., `username/devops-demo:latest`).   Click `Deploy`.   In the service Settings, go to `Networking` and click `Generate Domain` to expose your application url and port.   Verification: Confirm that your service source in Railway shows `Image: username/devops-demo:latest` rather than a connected Git repository.
+
+### 2. Update Your GitHub Actions Workflow
+Since the image is built and pushed to Docker Hub in the publish job, the deploy job simply needs to command Railway to pull and redeploy any newly pushed image.
+
+```bash
+  # ==========================================
+  # DEPLOY JOB - Trigger Railway to pull latest Docker Hub image
+  # ==========================================
+  deploy:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Redeploy Docker Image on Railway
+        run: railway redeploy --project "devops-demo" --environment production --service api-service -y
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+```
+
+### Key Differences Between railway up and railway redeploy
+
+- `railway up`: Uploads local repository source files and builds the container directly on Railway's build servers.   
+
+- `railway redeploy`: Tells Railway to bypass local code uploads and pull the fresh image tag directly from your image registry (Docker Hub).
+
