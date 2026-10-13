@@ -142,7 +142,7 @@ Since the image is built and pushed to Docker Hub in the publish job, the deploy
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 ```
 
-> `--project`, `--environment` and `service` must match up with the setup on Railway.
+> **Note**: `--project`, `--environment` and `--service` parameters must match up with the setup on Railway.
 
 ### Key Differences Between `railway up` and `railway redeploy`
 
