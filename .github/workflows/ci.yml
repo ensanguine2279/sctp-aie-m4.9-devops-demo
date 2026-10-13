@@ -109,10 +109,13 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Check Railway authentication
+      - name: Inspect Railway environment
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway whoami
+        run: |
+          railway status \
+          --project devops-demo \
+          --environment production
 
       - name: Redeploy Docker Image on Railway
         run: railway redeploy --project "devops-demo" --environment production --service api-service -y
